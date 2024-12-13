@@ -10,6 +10,3 @@ own proprietary software via the pygame library
 - Working calendar
 - map of current location
 - music player
-- 
-
-- 
