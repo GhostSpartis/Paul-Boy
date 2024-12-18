@@ -1,68 +1,261 @@
+import datetime
+import multiprocessing
 import pygame
 from time import strftime
 from betterplaysound import playsound
+
 class ClockTab:
+    """
+    ClockTab class manages the clock display, alarm settings, and alarm notifications.
+
+    Attributes:
+        PIP_COLOUR (tuple): The color used for clock and text.
+        MID_PIP_COLOUR (tuple): The color used for the middle part of the clock frame.
+        DARK_PIP_COLOUR (tuple): The color used for the darker part of the clock frame.
+        screen (pygame.Surface): The screen surface where elements are drawn.
+        clock_font (pygame.font.Font): Font used for displaying the time.
+        bottom_bar_font (pygame.font.Font): Font used for displaying the date and other info.
+        alarm_font (pygame.font.Font): Font used for the alarm notification and settings.
+        dial_font (pygame.font.Font): Font used for displaying the alarm time dials.
+        increment_h (int): Hour value for the alarm time.
+        increment_m (int): Minute value for the alarm time.
+        alarm_time (str): The formatted time string for the alarm.
+        alarm_h (int): Hour value of the set alarm.
+        alarm_m (int): Minute value of the set alarm.
+        alarm_triggered_flag (bool): Flag indicating if the alarm has been triggered.
+        snooze_check (bool): Flag indicating if snooze is active.
+        stop_alarm_sound (bool): Flag for stopping the alarm sound.
+        music (multiprocessing.Process): Process for playing the alarm sound.
+    """
 
     PIP_COLOUR = (18, 220, 21)
     MID_PIP_COLOUR = (1, 150, 9)
     DARK_PIP_COLOUR = (1, 50, 9)
 
-
     def __init__(self, screen):
+        """
+        Initialize the ClockTab with a screen surface and default settings for the clock and alarm.
+
+        Args:
+            screen (pygame.Surface): The surface on which to draw the clock and other UI elements.
+        """
         self.screen = screen
-        self.clock_font = pygame.font.Font("monofonto rg.otf", 130)
-        self.date_font = pygame.font.Font("monofonto rg.otf", 20)
-        self.button_font = pygame.font.Font("monofonto rg.otf", 20)
+        self.clock_font = pygame.font.Font("media/monofonto rg.otf", 140)
+        self.bottom_bar_font = pygame.font.Font("media/monofonto rg.otf", 25)
+        self.alarm_font = pygame.font.Font("media/monofonto rg.otf", 20)
+        self.dial_font = pygame.font.Font("media/monofonto rg.otf", 40)
+        self.increment_h = 0
+        self.increment_m = 0
+        self.alarm_time = ""
+        self.alarm_h = 0
+        self.alarm_m = 0
+        self.alarm_triggered_flag = False
+        self.snooze_check = False
+        self.stop_alarm_sound = False
+        self.music = multiprocessing.Process(target=playsound, args=("media/Alarm Sound.mp3",), daemon=True)
 
     def draw_clock_frame(self):
-        """Draw the decorative frame around the clock."""
+        """
+        Draw the decorative frame around the clock.
+
+        This method creates a visual border around the clock display area.
+        """
         pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(3, 40, 2, 8))
         pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(3, 40, 77, 2))
         pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(80, 20, 2, 22))
         pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(80, 20, 5, 2))
-
         pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(170, 20, 2, 22))
         pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(165, 20, 5, 2))
         pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(170, 40, 305, 2))
-
         pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(475, 40, 2, 8))
 
     def draw_clock(self):
-        """Render and return the clock text surface."""
+        """
+        Render and return the clock text surface.
+
+        Returns:
+            pygame.Surface: The surface containing the rendered clock time.
+        """
         current_time = strftime('%H:%M')
         clock_surface = self.clock_font.render(current_time, True, self.PIP_COLOUR, None)
         return clock_surface
 
     def draw_date(self):
-        """Render and return the date surface."""
+        """
+        Render and return the date surface.
+
+        Returns:
+            pygame.Surface: The surface containing the rendered date.
+        """
         date_string = strftime("%m.%d.%Y")
-        date_surface = self.date_font.render(date_string, True, self.PIP_COLOUR, None)
+        date_surface = self.bottom_bar_font.render(date_string, True, self.PIP_COLOUR, None)
         return date_surface
 
     def draw_alarm_button(self):
-        """Render and return the alarm button surface."""
-        alarm_surface = self.button_font.render("Set Alarm", True, self.PIP_COLOUR, None)
+        """
+        Render and return the alarm button surface.
+
+        Returns:
+            pygame.Surface: The surface containing the "Set Alarm" button.
+        """
+        alarm_surface = self.alarm_font.render("Set Alarm", True, self.PIP_COLOUR, None)
         return alarm_surface
 
+    def draw_dial(self, increment):
+        """
+        Render and return the alarm dial surface.
+
+        Args:
+            increment (int): The current value of the dial (hour or minute).
+
+        Returns:
+            pygame.Surface: The surface containing the rendered dial value.
+        """
+        if increment > 9:
+            dial_surface = self.dial_font.render(str(increment), True, self.PIP_COLOUR, None)
+        else:
+            dial_surface = self.dial_font.render("{:02d}".format(increment), True, self.PIP_COLOUR, None)
+        return dial_surface
+
+    def increment_dial_H(self):
+        """
+        Increment the hour dial value for setting the alarm.
+
+        If the hour reaches 23, it wraps around to 0.
+        """
+        if self.increment_h >= 23:
+            self.increment_h = 0
+        else:
+            self.increment_h += 1
+
+    def increment_dial_M(self):
+        """
+        Increment the minute dial value for setting the alarm.
+
+        If the minute reaches 59, it wraps around to 0.
+        """
+        if self.increment_m >= 59:
+            self.increment_m = 0
+        else:
+            self.increment_m += 1
+
+    def view_alarm(self):
+        """
+        Display an alarm icon if the alarm is set.
+
+        This method renders an image representing the alarm when it is set.
+        """
+        if self.alarm_time != "":
+            imp = pygame.image.load("media/VaultBoyApproved.png").convert_alpha()
+            imp = pygame.transform.scale(imp, (60, 60))
+            imp = pygame.transform.flip(imp, True, False)
+            self.screen.blit(imp, (410, 250))
+
+    def set_alarm(self):
+        """
+        Set the alarm to the current dial values.
+
+        This method updates the alarm time using the current hour and minute values
+        from the dials and resets the flags for the next alarm.
+        """
+        self.alarm_h = self.increment_h
+        self.alarm_m = self.increment_m
+        self.alarm_triggered_flag = False
+        self.snooze_check = False
+        self.alarm_time = "{:02d}".format(self.increment_h) + ":" + "{:02d}".format(self.increment_m)
+
+    def check_alarm(self):
+        """
+        Check if the current time matches the set alarm and play a sound.
+
+        If the time matches the alarm, it triggers the alarm sound.
+        """
+        current_hour = int(strftime("%H"))
+        current_minute = int(strftime("%M"))
+
+        if not self.snooze_check:
+            if self.alarm_h == current_hour and self.alarm_m == current_minute:
+                if not self.alarm_triggered_flag:
+                    self.alarm_triggered_flag = True
+                    self.music = multiprocessing.Process(
+                        target=playsound, args=("media/Alarm Sound.mp3",), daemon=True)
+                    self.music.start()
+            else:
+                self.alarm_triggered_flag = False
+
+    def snooze(self):
+        """
+        Snooze the alarm for a period.
+
+        Stops the alarm sound and sets the snooze check to true.
+        """
+        self.snooze_check = True
+        self.alarm_triggered_flag = False
+        self.music.kill()
+
+    def alarm_notification(self):
+        """
+        Display the alarm notification on the screen.
+
+        This method renders a notification on the screen when the alarm has been triggered.
+        """
+        if self.alarm_triggered_flag:
+            self.screen.fill(self.DARK_PIP_COLOUR, (145, 120, 180, 100))
+            self.screen.fill(self.PIP_COLOUR, (145, 120, 180, 2))
+            self.screen.fill(self.PIP_COLOUR, (145, 220, 180, 2))
+            self.screen.fill(self.PIP_COLOUR, (145, 120, 2, 100))
+            self.screen.fill(self.PIP_COLOUR, (325, 120, 2, 100))
+            snooze = self.alarm_font.render("WAKE UP TIME!!!", True, self.PIP_COLOUR, None)
+            self.screen.blit(snooze, (165, 145))
+            ok = self.alarm_font.render("OK", True, self.DARK_PIP_COLOUR, None)
+            self.screen.fill(self.PIP_COLOUR, (216, 180, 40, 30))
+            self.screen.blit(ok, (225, 182))
+
+    def total_sleep(self):
+        """
+        Calculate the total time remaining until the alarm goes off.
+
+        Returns:
+            str: A string representing the total hours and minutes remaining.
+        """
+        total_hours = self.increment_h - int(strftime('%H'))
+        if total_hours < 0:
+            total_hours = self.increment_h - int(strftime('%H')) + 24
+
+        total_minutes = self.increment_m - int(strftime('%M')) + 60
+        if total_minutes == 60:
+            total_minutes = 0
+        elif total_minutes > 60:
+            total_minutes = self.increment_m - int(strftime('%M'))
+
+        total = str(total_hours) + "Hrs " + str(total_minutes) + "M"
+        return total
+
     def render(self):
-        """Main method to render the entire Clock tab."""
-        # Draw clock frame
+        """
+        Main method to render the entire Clock tab.
+
+        This method handles all the drawing and rendering of elements such as the clock,
+        alarm settings, buttons, date, and notification.
+        """
         self.draw_clock_frame()
-
-        # Clear clock area
-        self.screen.fill((0, 0, 0), (80, 80, 350, 300))  # Black area for clock
-
-        # Draw clock
-        self.screen.blit(self.draw_clock(), (80, 80))
-
-        # Draw date
+        self.screen.fill((0, 0, 0), (58, 50, 250, 200))  # Black area for clock
+        self.screen.blit(self.draw_clock(), (58, 50))
+        self.screen.blit(self.draw_dial(self.increment_h), (175, 190))
+        self.screen.blit(self.draw_dial(self.increment_m), (255, 190))
+        dial_separation = self.dial_font.render(":", True, self.PIP_COLOUR, None)
+        self.screen.blit(dial_separation, (225, 190))
+        self.screen.blit(self.draw_alarm_button(), (190, 230))
         self.screen.fill(self.DARK_PIP_COLOUR, (3, 280, 157, 30))
-        self.screen.blit(self.draw_date(), (5, 283))
-
-        # Draw alarm button
+        self.screen.blit(self.draw_date(), (5, 282))
         self.screen.fill(self.DARK_PIP_COLOUR, (163, 280, 130, 30))
-        self.screen.blit(self.draw_alarm_button(), (165, 282))
-
-        #draw blank edge
+        hours_sleep = self.bottom_bar_font.render(self.total_sleep(), True, self.PIP_COLOUR, None)
+        self.screen.blit(hours_sleep, (165, 282))
         self.screen.fill(self.DARK_PIP_COLOUR, (296, 280, 180, 30))
+        alarm = self.bottom_bar_font.render(self.alarm_time, True, self.PIP_COLOUR, None)
+        self.screen.blit(alarm, (300, 282))
+        self.view_alarm()
+        self.alarm_notification()
+
+
 
