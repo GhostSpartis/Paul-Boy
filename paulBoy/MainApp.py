@@ -64,11 +64,11 @@ class MainApp:
         This method renders the text for the tab names using the specified font
         and positions them at fixed locations on the screen.
         """
-        clock_tab_name = self.tab_font.render("CLOCK", True, self.PIP_COLOUR, None)
-        calendar_tab_name = self.tab_font.render("CLNDR", True, self.PIP_COLOUR, None)
+        clock_tab_name = self.tab_font.render("STAT", True, self.PIP_COLOUR, None)
+        calendar_tab_name = self.tab_font.render("DATA", True, self.PIP_COLOUR, None)
         music_tab_name = self.tab_font.render("RADIO", True, self.PIP_COLOUR, None)
 
-        self.screen.blit(clock_tab_name, (90, 5))
+        self.screen.blit(clock_tab_name, (95, 5))
         self.screen.blit(calendar_tab_name, (220, 5))
         self.screen.blit(music_tab_name, (350, 5))
 

@@ -44,6 +44,7 @@ class ClockTab:
         self.bottom_bar_font = pygame.font.Font("media/monofonto rg.otf", 25)
         self.alarm_font = pygame.font.Font("media/monofonto rg.otf", 20)
         self.dial_font = pygame.font.Font("media/monofonto rg.otf", 40)
+        self.tab_font = pygame.font.Font("media/monofonto rg.otf", 30)
         self.increment_h = 0
         self.increment_m = 0
         self.alarm_time = ""
@@ -61,12 +62,12 @@ class ClockTab:
         This method creates a visual border around the clock display area.
         """
         pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(3, 40, 2, 8))
-        pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(3, 40, 77, 2))
-        pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(80, 20, 2, 22))
-        pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(80, 20, 5, 2))
-        pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(170, 20, 2, 22))
-        pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(165, 20, 5, 2))
-        pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(170, 40, 305, 2))
+        pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(3, 40, 203, 2))
+        pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(205, 20, 2, 22))
+        pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(205, 20, 5, 2))
+        pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(295, 20, 2, 22))
+        pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(290, 20, 5, 2))
+        pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(295, 40, 180, 2))
         pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(475, 40, 2, 8))
 
     def draw_clock(self):
@@ -256,6 +257,13 @@ class ClockTab:
         self.screen.blit(alarm, (300, 282))
         self.view_alarm()
         self.alarm_notification()
+
+        alarm_tab = self.tab_font.render("ALARM", True, self.PIP_COLOUR, None)
+        self.screen.blit(alarm_tab, (212, 40))
+        date_tab = self.tab_font.render("DATE", True, self.MID_PIP_COLOUR, None)
+        self.screen.blit(date_tab, (140, 40))
+
+
 
 
 
