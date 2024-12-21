@@ -10,3 +10,11 @@ own proprietary software via the pygame library
 - Working calendar
 - map of current location
 - music player
+
+## Navigation CONTROLS (WIP)
+- Scroll to move from DATE TO ALARM
+- Right Click to Move from ALARM TO DATE
+
+## Alarm CONTROLS (WIP)
+- Scroll to highlight the dials or set alarm button
+- Left click to increment dials and/or set alarm

@@ -1,10 +1,10 @@
-import datetime
 import multiprocessing
 import pygame
 from time import strftime
 from betterplaysound import playsound
 
-class ClockTab:
+
+class AlarmClockTab:
     """
     ClockTab class manages the clock display, alarm settings, and alarm notifications.
 
@@ -28,7 +28,7 @@ class ClockTab:
         music (multiprocessing.Process): Process for playing the alarm sound.
     """
 
-    PIP_COLOUR = (18, 220, 21)
+    PIP_COLOUR = (5, 250, 5)
     MID_PIP_COLOUR = (1, 150, 9)
     DARK_PIP_COLOUR = (1, 50, 9)
 
@@ -118,7 +118,7 @@ class ClockTab:
             dial_surface = self.dial_font.render("{:02d}".format(increment), True, self.PIP_COLOUR, None)
         return dial_surface
 
-    def increment_dial_H(self):
+    def increment_dial_h(self):
         """
         Increment the hour dial value for setting the alarm.
 
@@ -129,7 +129,7 @@ class ClockTab:
         else:
             self.increment_h += 1
 
-    def increment_dial_M(self):
+    def increment_dial_m(self):
         """
         Increment the minute dial value for setting the alarm.
 
@@ -201,16 +201,21 @@ class ClockTab:
         This method renders a notification on the screen when the alarm has been triggered.
         """
         if self.alarm_triggered_flag:
-            self.screen.fill(self.DARK_PIP_COLOUR, (145, 120, 180, 100))
-            self.screen.fill(self.PIP_COLOUR, (145, 120, 180, 2))
-            self.screen.fill(self.PIP_COLOUR, (145, 220, 180, 2))
-            self.screen.fill(self.PIP_COLOUR, (145, 120, 2, 100))
-            self.screen.fill(self.PIP_COLOUR, (325, 120, 2, 100))
+            # Builds Box
+            self.screen.fill(self.DARK_PIP_COLOUR, (145, 90, 180, 100))
+            self.screen.fill(self.PIP_COLOUR, (145, 90, 180, 2))
+            self.screen.fill(self.PIP_COLOUR, (145, 190, 180, 2))
+            self.screen.fill(self.PIP_COLOUR, (145, 90, 2, 100))
+            self.screen.fill(self.PIP_COLOUR, (325, 90, 2, 100))
+
+            # Builds Snooze Message
             snooze = self.alarm_font.render("WAKE UP TIME!!!", True, self.PIP_COLOUR, None)
-            self.screen.blit(snooze, (165, 145))
+            self.screen.blit(snooze, (165, 115))
+
+            # Builds Ok Button
             ok = self.alarm_font.render("OK", True, self.DARK_PIP_COLOUR, None)
-            self.screen.fill(self.PIP_COLOUR, (216, 180, 40, 30))
-            self.screen.blit(ok, (225, 182))
+            self.screen.fill(self.PIP_COLOUR, (216, 150, 40, 30))
+            self.screen.blit(ok, (225, 152))
 
     def total_sleep(self):
         """
@@ -239,31 +244,40 @@ class ClockTab:
         This method handles all the drawing and rendering of elements such as the clock,
         alarm settings, buttons, date, and notification.
         """
+        # Builds Clock Frame
         self.draw_clock_frame()
         self.screen.fill((0, 0, 0), (58, 50, 250, 200))  # Black area for clock
+
+        # Builds Clock and Dials for Alarm Setting
         self.screen.blit(self.draw_clock(), (58, 50))
         self.screen.blit(self.draw_dial(self.increment_h), (175, 190))
         self.screen.blit(self.draw_dial(self.increment_m), (255, 190))
         dial_separation = self.dial_font.render(":", True, self.PIP_COLOUR, None)
         self.screen.blit(dial_separation, (225, 190))
+
+        # Builds set alarm button
         self.screen.blit(self.draw_alarm_button(), (190, 230))
-        self.screen.fill(self.DARK_PIP_COLOUR, (3, 280, 157, 30))
-        self.screen.blit(self.draw_date(), (5, 282))
-        self.screen.fill(self.DARK_PIP_COLOUR, (163, 280, 130, 30))
-        hours_sleep = self.bottom_bar_font.render(self.total_sleep(), True, self.PIP_COLOUR, None)
-        self.screen.blit(hours_sleep, (165, 282))
-        self.screen.fill(self.DARK_PIP_COLOUR, (296, 280, 180, 30))
-        alarm = self.bottom_bar_font.render(self.alarm_time, True, self.PIP_COLOUR, None)
-        self.screen.blit(alarm, (300, 282))
-        self.view_alarm()
-        self.alarm_notification()
 
         alarm_tab = self.tab_font.render("ALARM", True, self.PIP_COLOUR, None)
         self.screen.blit(alarm_tab, (212, 40))
         date_tab = self.tab_font.render("DATE", True, self.MID_PIP_COLOUR, None)
         self.screen.blit(date_tab, (140, 40))
 
+    def build_bottom_bracket(self):
+        # Builds Bottom Left Bracket
+        self.screen.fill(self.DARK_PIP_COLOUR, (3, 280, 157, 30))
+        self.screen.blit(self.draw_date(), (5, 282))
+        self.screen.fill(self.DARK_PIP_COLOUR, (163, 280, 130, 30))
 
+        # Builds Bottom Center Bracket
+        hours_sleep = self.bottom_bar_font.render(self.total_sleep(), True, self.PIP_COLOUR, None)
+        self.screen.blit(hours_sleep, (165, 282))
 
+        # Builds Bottom Right Bracket
+        self.screen.fill(self.DARK_PIP_COLOUR, (296, 280, 180, 30))
+        alarm = self.bottom_bar_font.render(self.alarm_time, True, self.PIP_COLOUR, None)
+        self.screen.blit(alarm, (300, 282))
 
-
+        # Ensures alarm is view no matter what screen
+        self.view_alarm()
+        self.alarm_notification()
