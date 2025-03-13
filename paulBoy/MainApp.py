@@ -4,6 +4,8 @@ from Button import Button
 from AlarmClockTab import AlarmClockTab
 from CalendarTab import CalendarTab
 from pygame.locals import *
+
+from RadioTab import RadioTab
 # Credit:
 # The `Graphic_engine` class and its functionality (e.g., `render`, `change_shader`, `Full_screen`)
 # are adapted from the work by JingShing.
@@ -43,7 +45,7 @@ class MainApp:
         self.screen = pygame.Surface((480, 320)).convert((255, 65282, 16711681, 0))
         pygame.display.set_caption("PAUL-BOY")
         pygame.display.set_mode(self.SCREEN_SIZE, DOUBLEBUF | OPENGL)
-        pygame.display.toggle_fullscreen()
+        # pygame.display.toggle_fullscreen()
         self.crt_shader = Graphic_engine(self.screen)
 
         # Fonts
@@ -66,6 +68,8 @@ class MainApp:
 
         # Calendar instance
         self.calendar_tab = CalendarTab(self.screen)
+
+        self.radio_player_tab = RadioTab(self.screen)
 
         # Track the currently highlighted option
         self.current_options_index = 0
@@ -169,6 +173,53 @@ class MainApp:
             crt_shader.Graphic_engine.__call__(self.crt_shader)
             pygame.time.delay(60)  # Small delay to reduce CPU usage
 
+    def radio_tab(self):
+        while True:
+            # Ensures no screen overlap
+            self.screen.blit(self.background, (0, 0))
+
+            self.radio_player_tab.render()
+
+            # Checks If Alarm Is Ready
+            self.alarm_clock_tab.check_alarm()
+
+            # Builds Bottom Bracket And Ensures Any Pre-Reqs for Alarm
+            self.alarm_clock_tab.build_bottom_bracket()
+
+            # Builds Tabs
+            self.draw_tabs()
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:  # Left mouse button click
+                        if self.alarm_clock_tab.alarm_triggered_flag:  # Ensures Alarm is active to avoid error
+                            self.radio_player_tab.pause_music()
+                            self.alarm_clock_tab.snooze()  # Snoozes Alarm
+                        self.radio_player_tab.play_selected_song() #plays current song
+                    if event.button == 3: # Right mouse button click
+                        self.home() # goes to home tab
+                elif event.type == pygame.MOUSEWHEEL:
+                    if event.y > 0:
+                        if self.radio_player_tab.current_index > 0:
+                            self.radio_player_tab.current_index = (self.radio_player_tab.current_index - 1) #scrolls up
+                        else:
+                            self.radio_player_tab.resume_music() #resume music if scroll too high
+                    if event.y < 0:
+                        if self.radio_player_tab.current_index >= 8:
+                            self.radio_player_tab.pause_music() # pauses music if scrolls too high
+                        else:
+                            self.radio_player_tab.current_index = (self.radio_player_tab.current_index + 1) # scrolls down
+
+            # Update display
+            pygame.display.flip()
+
+            # Adds CRT Filter
+            crt_shader.Graphic_engine.__call__(self.crt_shader)
+            pygame.time.delay(60)  # Small delay to reduce CPU usage
+
+
     def home(self):
         """
         Main game loop that handles events, updates the screen, and renders the clock and tabs.
@@ -201,6 +252,8 @@ class MainApp:
                     if event.button == 1:  # Left mouse button click
                         if self.alarm_clock_tab.alarm_triggered_flag:  # Ensures Alarm is active to avoid error
                             self.alarm_clock_tab.snooze()  # Snoozes Alarm
+                    if event.button == 3:
+                        self.radio_tab()
                 elif event.type == pygame.MOUSEWHEEL:
                     self.alarm_tab()  # Changes to Different Tab
 

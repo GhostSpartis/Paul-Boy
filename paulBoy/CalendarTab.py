@@ -10,7 +10,6 @@ class CalendarTab:
     A class to manage and render the calendar tab in a Pygame application.
 
     Attributes:
-    -----------
     PIP_COLOUR : tuple
         RGB color for the main green color used in the interface.
     MID_PIP_COLOUR : tuple
@@ -33,15 +32,6 @@ class CalendarTab:
         The current date and time.
     clock_tab : ClockTab
         An instance of the ClockTab class used for drawing and managing clock-related features.
-
-    Methods:
-    --------
-    draw_calendar():
-        Render the calendar for the current month, highlighting the current day.
-    draw_calendar_frame():
-        Draw a decorative frame around the calendar area.
-    render():
-        Render the complete calendar tab, including the calendar, clock, and alarm information.
     """
 
     PIP_COLOUR = (5, 250, 5)
