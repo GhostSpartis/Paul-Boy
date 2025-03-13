@@ -13,8 +13,19 @@ own proprietary software via the pygame library
 
 ## Navigation CONTROLS (WIP)
 - Scroll to move from DATE TO ALARM
-- Right Click to Move from ALARM TO DATE
+- Right Click to Move from DATE TO RADIO
 
 ## Alarm CONTROLS (WIP)
 - Scroll to highlight the dials or set alarm button
 - Left click to increment dials and/or set alarm
+- Right Click to Move from ALARM TO DATE
+
+## Radio CONTROLS (WIP)
+- Scroll to highlight the song you want to play
+- Left click to select highlighted song to play
+- Scroll past the bottom to pause
+- Scroll past the top to resume
+
+## Adding Music
+1. Add all music .mp3 files to the music file in media
+2. Done :)
