@@ -206,9 +206,11 @@ class MainApp:
                             self.radio_player_tab.current_index = (self.radio_player_tab.current_index - 1) #scrolls up
                         else:
                             self.radio_player_tab.resume_music() #resume music if scroll too high
+                            self.radio_player_tab.current_index = -1
                     if event.y < 0:
                         if self.radio_player_tab.current_index >= 8:
                             self.radio_player_tab.pause_music() # pauses music if scrolls too high
+                            self.radio_player_tab.current_index = 9
                         else:
                             self.radio_player_tab.current_index = (self.radio_player_tab.current_index + 1) # scrolls down
 

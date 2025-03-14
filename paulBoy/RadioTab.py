@@ -19,6 +19,7 @@ class RadioTab:
     PIP_COLOUR = (5, 250, 5)
     MID_PIP_COLOUR = (1, 150, 9)
     DARK_PIP_COLOUR = (1, 50, 9)
+    RED = (255, 0, 0)
 
     def __init__(self, screen, music_folder="media/music"):
         self.screen = screen
@@ -35,6 +36,8 @@ class RadioTab:
         self.playlist = self.create_song_playlist()
         self.current_index = 0  # Tracks which song is highlighted
         self.is_playing = False
+        self.currently_playing = 0
+        self.scroll_offset = 325
 
         # Load first song if available
         if self.playlist:
@@ -59,8 +62,9 @@ class RadioTab:
 
     def draw_selection_frame(self):
         """Draws a selection box around the currently highlighted song."""
-        pygame.draw.rect(self.screen, self.PIP_COLOUR, pygame.Rect(30, 80 + self.current_index * 20, 250, 18))
-        pygame.draw.rect(self.screen, self.DARK_PIP_COLOUR, pygame.Rect(35, 84 + self.current_index * 20, 10, 10))
+        if self.current_index >= 0 and self.current_index <= 8:
+            pygame.draw.rect(self.screen, self.PIP_COLOUR, pygame.Rect(30, 80 + self.current_index * 20, 250, 18))
+            pygame.draw.rect(self.screen, self.DARK_PIP_COLOUR, pygame.Rect(35, 84 + self.current_index * 20, 10, 10))
 
     def draw_playlist(self):
         """Displays the list of songs with the highlighted selection frame."""
@@ -81,6 +85,7 @@ class RadioTab:
             pygame.mixer.music.load(self.playlist[self.current_index])
             pygame.mixer.music.play()
             self.is_playing = True
+            self.currently_playing = self.current_index
 
     def pause_music(self):
         """Pauses the currently playing song."""
@@ -118,6 +123,15 @@ class RadioTab:
             y_offset = int(self.wave_amplitude * math.sin((x * 0.05) + self.wave_phase))
             pygame.draw.circle(self.screen, wave_color, (start_x + x, center_y + y_offset), 2)
 
+    def text_indicator(self):
+        pause = self.font.render("Pause", True, self.DARK_PIP_COLOUR, None)
+        if self.current_index == 9:
+            pause = self.font.render("Pause", True, self.RED, None)
+        self.screen.blit(pause, (100, 255))
+        resume = self.font.render("Resume", True, self.DARK_PIP_COLOUR, None)
+        if self.current_index == -1:
+             resume = self.font.render("Resume", True, self.RED, None)
+        self.screen.blit(resume, (100, 55))
 
     def render(self):
         """Renders the music player interface."""
@@ -128,4 +142,27 @@ class RadioTab:
         self.draw_playlist()
         self.update_visualizer()
         self.draw_waveform()
+        self.text_indicator()
+        # Scrolling effect for the currently playing song (wraps between 380 and 325)
+        if self.is_playing and self.playlist:
+            song_name = os.path.basename(self.playlist[self.currently_playing])[:-4]
+            song_surface = self.font.render(song_name, True, self.RED, None)
+            text_width = song_surface.get_width()
 
+            # Move the text left by 1 pixel per frame
+            self.scroll_offset -= 1
+
+            # Hide text as it reaches 325 by showing only part of it
+            if self.scroll_offset < 325:
+                visible_width = text_width - (325 - self.scroll_offset)
+                if visible_width > 0:
+                    cropped_text = song_surface.subsurface(
+                        (text_width - visible_width, 0, visible_width, song_surface.get_height()))
+                    self.screen.blit(cropped_text, (325, 215))
+
+            else:
+                self.screen.blit(song_surface, (self.scroll_offset, 215))
+
+            # Reset position when the full text has disappeared
+            if self.scroll_offset + text_width <= 325:
+                self.scroll_offset = 380
