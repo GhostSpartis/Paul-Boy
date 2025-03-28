@@ -1,7 +1,7 @@
 import pygame
 import calendar
 from datetime import datetime
-from AlarmClockTab import AlarmClockTab
+from AlarmClockTablet import AlarmClockTab
 from time import strftime
 
 

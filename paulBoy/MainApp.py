@@ -1,10 +1,11 @@
 import pygame
 import crt_shader
 from Button import Button
-from AlarmClockTab import AlarmClockTab
-from CalendarTab import CalendarTab
+from AlarmClockTablet import AlarmClockTab
+from CalendarTablet import CalendarTab
 from pygame.locals import *
 
+from HabitTablet import HabitTablet
 from RadioTab import RadioTab
 # Credit:
 # The `Graphic_engine` class and its functionality (e.g., `render`, `change_shader`, `Full_screen`)
@@ -70,6 +71,8 @@ class MainApp:
         self.calendar_tab = CalendarTab(self.screen)
 
         self.radio_player_tab = RadioTab(self.screen)
+
+        self.habit_tablet = HabitTablet(self.screen)
 
         # Track the currently highlighted option
         self.current_options_index = 0
@@ -199,7 +202,7 @@ class MainApp:
                             self.alarm_clock_tab.snooze()  # Snoozes Alarm
                         self.radio_player_tab.play_selected_song() #plays current song
                     if event.button == 3: # Right mouse button click
-                        self.home() # goes to home tab
+                        self.habit_tab() # goes to home tab
                 elif event.type == pygame.MOUSEWHEEL:
                     if event.y > 0:
                         if self.radio_player_tab.current_index > 0:
@@ -221,6 +224,44 @@ class MainApp:
             crt_shader.Graphic_engine.__call__(self.crt_shader)
             pygame.time.delay(60)  # Small delay to reduce CPU usage
 
+    def habit_tab(self):
+        while True:
+            # Ensures no screen overlap
+            self.screen.blit(self.background, (0, 0))
+
+            self.habit_tablet.render()
+
+            # Checks If Alarm Is Ready
+            self.alarm_clock_tab.check_alarm()
+
+            # Builds Bottom Bracket And Ensures Any Pre-Reqs for Alarm
+            self.alarm_clock_tab.build_bottom_bracket()
+
+            # Builds Tabs
+            self.draw_tabs()
+
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    pygame.quit()
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if event.button == 1:  # Left mouse button click
+                        self.habit_tablet.increment_btn()
+                    if event.button == 3: # Right mouse button click
+                        self.home() # goes to home tab
+                elif event.type == pygame.MOUSEWHEEL:
+                    if event.y > 0:
+                        if self.habit_tablet.current_index > 0:
+                            self.habit_tablet.current_index = (self.habit_tablet.current_index - 1) #scrolls up
+                    if event.y < 0:
+                        if self.habit_tablet.current_index < 4:
+                            self.habit_tablet.current_index = (self.habit_tablet.current_index + 1) # scrolls down
+
+            # Update display
+            pygame.display.flip()
+
+            # Adds CRT Filter
+            crt_shader.Graphic_engine.__call__(self.crt_shader)
+            pygame.time.delay(60)  # Small delay to reduce CPU usage
 
     def home(self):
         """
@@ -267,6 +308,7 @@ class MainApp:
             pygame.time.delay(60)  # Small delay to reduce CPU usage
 
         pygame.quit()
+
 
 
 if __name__ == "__main__":

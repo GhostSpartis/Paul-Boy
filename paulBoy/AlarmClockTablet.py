@@ -45,14 +45,17 @@ class AlarmClockTab:
         self.alarm_font = pygame.font.Font("media/monofonto rg.otf", 20)
         self.dial_font = pygame.font.Font("media/monofonto rg.otf", 40)
         self.tab_font = pygame.font.Font("media/monofonto rg.otf", 30)
+
         self.increment_h = 0
         self.increment_m = 0
         self.alarm_time = ""
         self.alarm_h = 0
         self.alarm_m = 0
+
         self.alarm_triggered_flag = False
         self.snooze_check = False
         self.stop_alarm_sound = False
+
         self.music = multiprocessing.Process(target=playsound, args=("media/Alarm Sound.mp3",), daemon=True)
 
     def draw_clock_frame(self):
