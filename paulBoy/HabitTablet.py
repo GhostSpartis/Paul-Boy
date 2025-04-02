@@ -1,20 +1,26 @@
-from datetime import datetime
 from time import strftime
 import calendar
 import pygame
 import json
 import os
-from numpy.f2py.auxfuncs import isfalse
-from pygame.image import tostring
 
 
 class HabitTablet:
     """
-    A habit tab, with 5 habits to check in with
+        A class representing a habit tracking system within a Pygame application.
 
-    Attributes:
-
-    """
+        Attributes:
+            SAVE_FILE (str): The file where habit data is saved.
+            PIP_COLOUR (tuple): Color for highlighting elements.
+            MID_PIP_COLOUR (tuple): Medium-intensity color for UI elements.
+            DARK_PIP_COLOUR (tuple): Darker color for UI elements.
+            screen (pygame.Surface): The Pygame screen object.
+            font (pygame.Font): Font used for rendering habit-related text.
+            tab_font (pygame.Font): Font used for rendering tab labels.
+            current_index (int): The currently selected habit index.
+            current_day (int): The current day being tracked.
+            habits (dict): Dictionary tracking different habit categories and their completion status.
+        """
 
     SAVE_FILE = "habit_data.json"
     PIP_COLOUR = (5, 250, 5)
@@ -22,6 +28,7 @@ class HabitTablet:
     DARK_PIP_COLOUR = (1, 50, 9)
 
     def __init__(self, screen):
+        """Initializes the HabitTablet with the given screen and default habit data."""
         self.screen = screen
         self.font = pygame.font.Font("media/monofonto rg.otf", 20)
         self.current_index = 0
@@ -41,7 +48,7 @@ class HabitTablet:
         self.load_progress()  # Load existing data at startup
 
     def draw_habit_frame(self):
-        """(WIP) Draws the decorative frame around the music player."""
+        """Draws the decorative frame around the habit tracker."""
         pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(3, 40, 2, 8))
         pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(3, 40, 78, 2))
         pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(170, 40, 305, 2))
@@ -53,12 +60,20 @@ class HabitTablet:
         pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(475, 40, 2, 8))
 
     def draw_habit_image(self, emblem, x):
+        """
+        Loads and draws a habit-related image at the specified position.
+
+        Args:
+            emblem: string representing image location
+            x (int): x location of image
+        """
         img = pygame.image.load(emblem)
         img = pygame.transform.scale(img, (60, 60))
         img = pygame.transform.flip(img, True, False)
         self.screen.blit(img, (x, 70))
 
     def draw_habit_buttons(self):
+        """Draws the buttons associated with each habit category."""
         self.draw_habit_button(50)
         self.draw_habit_button(130)
         self.draw_habit_button(210)
@@ -76,18 +91,23 @@ class HabitTablet:
         self.draw_habit_image("media/Social.png", 370)
 
     def draw_habit_button(self, x):
+        """
+        Draws a single habit button at the specified x position.
+
+        Args:
+            x (int): position of the habit button
+        """
         pygame.draw.rect(self.screen, self.PIP_COLOUR, pygame.Rect(x, 130, 2, 62))
         pygame.draw.rect(self.screen, self.PIP_COLOUR, pygame.Rect(x + 60, 130, 2, 62))
         pygame.draw.rect(self.screen, self.PIP_COLOUR, pygame.Rect(x, 130, 60, 2))
         pygame.draw.rect(self.screen, self.PIP_COLOUR, pygame.Rect(x, 190, 60, 2))
-
         pygame.draw.rect(self.screen, self.PIP_COLOUR, pygame.Rect(x,210, 60, 2))
         pygame.draw.rect(self.screen, self.PIP_COLOUR, pygame.Rect(x, 210, 2, 22))
         pygame.draw.rect(self.screen, self.PIP_COLOUR, pygame.Rect(x + 60, 210, 2, 22))
         pygame.draw.rect(self.screen, self.PIP_COLOUR, pygame.Rect(x, 230, 60, 2))
 
-
     def draw_selection_frame(self):
+        """Draws a selection frame around the currently selected habit."""
         pygame.draw.rect(self.screen, self.PIP_COLOUR, pygame.Rect(80 * self.current_index + 50, 130, 60, 60))
 
     def save_progress(self):
@@ -117,6 +137,13 @@ class HabitTablet:
             habit["daily_check"] = False
 
     def completed_this_month(self, x, count):
+        """
+        Displays the number of times a habit was completed in the current month.
+
+        Args:
+            x (int): X-coordinate of the fraction.
+            count (int): amount habit was completed.
+        """
         year, month = int(strftime("%Y")), int(strftime("%m"))
         days_in_month = calendar.monthrange(year, month)[1]
         progress_text = f"{self.habits[count]['count']}/{days_in_month}"  # Keep fraction format
@@ -124,6 +151,7 @@ class HabitTablet:
         self.screen.blit(ttl_count, (x, 208))
 
     def increment_btn(self):
+        """Increments the habit count for the selected habit if it hasn't been checked today."""
         habit_names = ["body", "mind", "spiritual", "skill", "social"]
         selected_habit = habit_names[self.current_index]
 
@@ -132,23 +160,17 @@ class HabitTablet:
             self.habits[selected_habit]["daily_check"] = True
             self.save_progress()  # Save progress after increment
 
-
-
-
     def render(self):
-
+        """Renders the habit tracker UI."""
         self.screen.fill((0, 0, 0), (0, 50, 480, 200))  # Black background
         self.draw_habit_frame()
         self.draw_selection_frame()
         self.draw_habit_buttons()
 
-        overview_tab = self.tab_font.render("OVERVIEW", True, self.MID_PIP_COLOUR, None)
-        self.screen.blit(overview_tab, (80, 40))
         habit_tab = self.tab_font.render("HABIT", True, self.PIP_COLOUR, None)
         self.screen.blit(habit_tab, (215, 40))
         youtube_tab = self.tab_font.render("YOUTUBE", True, self.MID_PIP_COLOUR, None)
         self.screen.blit(youtube_tab, (305, 40))
-
 
         habit_names = ["body", "mind", "spiritual", "skill", "social"]
         for i, habit in enumerate(habit_names):
@@ -156,5 +178,3 @@ class HabitTablet:
                 checkmark = pygame.image.load("media/Checkmark.png")
                 checkmark = pygame.transform.scale(checkmark, (60, 60))
                 self.screen.blit(checkmark, (80 * i + 50, 130))
-
-

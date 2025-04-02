@@ -60,9 +60,7 @@ class AlarmClockTab:
 
     def draw_clock_frame(self):
         """
-        Draw the decorative frame around the clock.
-
-        This method creates a visual border around the clock display area.
+        Draw the decorative frame around the clock for the tabs.
         """
         pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(3, 40, 2, 8))
         pygame.draw.rect(self.screen, self.MID_PIP_COLOUR, pygame.Rect(3, 40, 203, 2))
@@ -76,9 +74,6 @@ class AlarmClockTab:
     def draw_clock(self):
         """
         Render and return the clock text surface.
-
-        Returns:
-            pygame.Surface: The surface containing the rendered clock time.
         """
         current_time = strftime('%H:%M')
         clock_surface = self.clock_font.render(current_time, True, self.PIP_COLOUR, None)
@@ -87,9 +82,6 @@ class AlarmClockTab:
     def draw_date(self):
         """
         Render and return the date surface.
-
-        Returns:
-            pygame.Surface: The surface containing the rendered date.
         """
         date_string = strftime("%m.%d.%Y")
         date_surface = self.bottom_bar_font.render(date_string, True, self.PIP_COLOUR, None)
@@ -98,9 +90,6 @@ class AlarmClockTab:
     def draw_alarm_button(self):
         """
         Render and return the alarm button surface.
-
-        Returns:
-            pygame.Surface: The surface containing the "Set Alarm" button.
         """
         alarm_surface = self.alarm_font.render("Set Alarm", True, self.PIP_COLOUR, None)
         return alarm_surface
@@ -111,9 +100,6 @@ class AlarmClockTab:
 
         Args:
             increment (int): The current value of the dial (hour or minute).
-
-        Returns:
-            pygame.Surface: The surface containing the rendered dial value.
         """
         if increment > 9:
             dial_surface = self.dial_font.render(str(increment), True, self.PIP_COLOUR, None)
@@ -223,9 +209,6 @@ class AlarmClockTab:
     def total_sleep(self):
         """
         Calculate the total time remaining until the alarm goes off.
-
-        Returns:
-            str: A string representing the total hours and minutes remaining.
         """
         total_hours = self.increment_h - int(strftime('%H'))
         if total_hours < 0:
@@ -267,6 +250,7 @@ class AlarmClockTab:
         self.screen.blit(date_tab, (140, 40))
 
     def build_bottom_bracket(self):
+        """ Builds the bottom bracket for the pip-boy with date, hours of sleep and alarm indicator"""
         # Builds Bottom Left Bracket
         self.screen.fill(self.DARK_PIP_COLOUR, (3, 280, 157, 30))
         self.screen.blit(self.draw_date(), (5, 282))

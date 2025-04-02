@@ -76,7 +76,12 @@ class RadioTab:
             self.screen.blit(song_surface, (50, 77 + i * 20))
 
     def minimize(self, songtext):
-        """Truncates the song name if it's longer than 21 characters."""
+        """
+        Truncates the song name if it's longer than 21 characters.
+
+        Args:
+            songtext (str): the name of the song taken from music file
+        """
         return songtext[:19] + "..." if len(songtext) > 21 else songtext
 
     def play_selected_song(self):
@@ -123,7 +128,8 @@ class RadioTab:
             y_offset = int(self.wave_amplitude * math.sin((x * 0.05) + self.wave_phase))
             pygame.draw.circle(self.screen, wave_color, (start_x + x, center_y + y_offset), 2)
 
-    def text_indicator(self):
+    def pause_play_indicator(self):
+        """Builds the pause and play button for the radio tab"""
         pause = self.font.render("Pause", True, self.DARK_PIP_COLOUR, None)
         if self.current_index == 9:
             pause = self.font.render("Pause", True, self.RED, None)
@@ -142,7 +148,7 @@ class RadioTab:
         self.draw_playlist()
         self.update_visualizer()
         self.draw_waveform()
-        self.text_indicator()
+        self.pause_play_indicator()
         # Scrolling effect for the currently playing song (wraps between 380 and 325)
         if self.is_playing and self.playlist:
             song_name = os.path.basename(self.playlist[self.currently_playing])[:-4]
