@@ -138,8 +138,8 @@ class MainApp:
     def click_noise(self):
         """ Click sound for button 1 click """
         self.looping_sound.stop()
-        self.click_sound.play(maxtime=100)
-        pygame.time.wait(120)  # Wait for the click sound to finish
+        self.click_sound.play(maxtime=150)
+        pygame.time.wait(170)  # Wait for the click sound to finish
         self.looping_sound.play(loops=-1)  # Restart the looping sound
 
     def handle_tab_controls(self, event):
