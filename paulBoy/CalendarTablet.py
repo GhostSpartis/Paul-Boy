@@ -1,11 +1,11 @@
 import pygame
 import calendar
 from datetime import datetime
-from AlarmClockTablet import AlarmClockTab
+from AlarmClockTablet import AlarmClockTablet
 from time import strftime
 
 
-class CalendarTab:
+class CalendarTablet:
     """
     A class to manage and render the calendar tab in a Pygame application.
 
@@ -46,7 +46,7 @@ class CalendarTab:
         self.tab_font = pygame.font.Font("media/monofonto rg.otf", 30)
         self.side_clock_font = pygame.font.Font("media/monofonto rg.otf", 80)
         self.current_date = datetime.now()
-        self.clock_tab = AlarmClockTab(screen)
+        self.clock_tab = AlarmClockTablet(screen)
 
     def draw_calendar(self):
         """

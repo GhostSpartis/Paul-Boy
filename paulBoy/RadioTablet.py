@@ -2,7 +2,7 @@ import pygame
 import os
 import math
 
-class RadioTab:
+class RadioTablet:
     """
     A music player tab that allows the user to navigate a playlist, play, pause, stop, and visualize music.
 

@@ -2,11 +2,11 @@ import pygame
 from betterplaysound import playsound
 import crt_shader
 from Button import Button
-from AlarmClockTablet import AlarmClockTab
-from CalendarTablet import CalendarTab
+from AlarmClockTablet import AlarmClockTablet
+from CalendarTablet import CalendarTablet
 from pygame.locals import *
 from HabitTablet import HabitTablet
-from RadioTab import RadioTab
+from RadioTablet import RadioTablet
 from YoutubeTablet import YoutubeTablet
 from crt_shader import Graphic_engine
 
@@ -32,9 +32,9 @@ class MainApp:
         MID_PIP_COLOUR (tuple): RGB color for medium-brightness elements
         DARK_PIP_COLOUR (tuple): RGB color for dark elements
         background (pygame.Surface): Background surface
-        alarm_clock_tab (AlarmClockTab): Alarm clock tab instance
-        calendar_tab (CalendarTab): Calendar tab instance
-        radio_player_tab (RadioTab): Radio player tab instance
+        alarm_clock_tab (AlarmClockTablet): Alarm clock tab instance
+        calendar_tab (CalendarTablet): Calendar tab instance
+        radio_player_tab (RadioTablet): Radio player tab instance
         youtube_tablet (YoutubeTablet): YouTube player tab instance
         habit_tablet (HabitTablet): Habit tracker tab instance
         current_tab (str): Currently active tab identifier
@@ -72,9 +72,9 @@ class MainApp:
         self.background = pygame.Surface((self.SCREEN_WIDTH, self.SCREEN_HEIGHT))
         self.background.fill((0, 0, 0))
 
-        self.alarm_clock_tab = AlarmClockTab(self.screen)
-        self.calendar_tab = CalendarTab(self.screen)
-        self.radio_player_tab = RadioTab(self.screen)
+        self.alarm_clock_tab = AlarmClockTablet(self.screen)
+        self.calendar_tab = CalendarTablet(self.screen)
+        self.radio_player_tab = RadioTablet(self.screen)
         self.youtube_tablet = YoutubeTablet(self.screen)
         self.habit_tablet = HabitTablet(self.screen)
 
@@ -135,7 +135,7 @@ class MainApp:
         current_index = tab_order.index(self.current_tab)
         self.current_tab = tab_order[(current_index + 1) % len(tab_order)]
 
-    def click_noise(self):
+    def click_sfx(self):
         """ Click sound for button 1 click """
         self.looping_sound.stop()
         self.click_sound.play(maxtime=150)
@@ -151,7 +151,7 @@ class MainApp:
         """
         if self.current_tab == "alarm":
             if event.button == 1:
-                self.click_noise()
+                self.click_sfx()
                 if self.alarm_clock_tab.alarm_triggered_flag:  # Ensures Alarm is active to avoid error
                     self.radio_player_tab.pause_music()
                     self.alarm_clock_tab.snooze()  # Snoozes Alarm
@@ -162,16 +162,22 @@ class MainApp:
                 elif self.current_options_index == 3:
                     self.alarm_clock_tab.set_alarm()
                     self.current_tab = "date"
+        elif self.current_tab == "date":
+            if event.button == 1:
+                self.click_sfx()
+                if self.alarm_clock_tab.alarm_triggered_flag:  # Ensures Alarm is active to avoid error
+                    self.radio_player_tab.pause_music()
+                    self.alarm_clock_tab.snooze()  # Snoozes Alarm
         elif self.current_tab == "radio":
             if event.button == 1:
-                self.click_noise()
+                self.click_sfx()
                 if self.alarm_clock_tab.alarm_triggered_flag:  # Ensures Alarm is active to avoid error
                     self.radio_player_tab.pause_music()
                     self.alarm_clock_tab.snooze()  # Snoozes Alarm
                 self.radio_player_tab.play_selected_song()
         elif self.current_tab == "habit":
             if event.button == 1:
-                self.click_noise()
+                self.click_sfx()
                 if self.alarm_clock_tab.alarm_triggered_flag:  # Ensures Alarm is active to avoid error
                     self.radio_player_tab.pause_music()
                     self.alarm_clock_tab.snooze()  # Snoozes Alarm

@@ -4,7 +4,7 @@ from time import strftime
 from betterplaysound import playsound
 
 
-class AlarmClockTab:
+class AlarmClockTablet:
     """
     ClockTab class manages the clock display, alarm settings, and alarm notifications.
 
